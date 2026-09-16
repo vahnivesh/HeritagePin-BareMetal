@@ -8,6 +8,7 @@
 
 <p align="center">
   <b>M# Hackathon 2026</b>
+  &nbsp;·&nbsp;
   <b>UID 50084</b>
   &nbsp;·&nbsp;
   Problem Statement <b>P07</b>
