@@ -4,7 +4,7 @@
        width="380">
 </p>
 
-<h1 align="center">Heritage Pin</h1>
+<h1 align="center">BareMetal</h1>
 
 <p align="center">
   <b>M# Hackathon 2026</b>
