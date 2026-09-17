@@ -1,1 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ec6b39">
+  <meta
+    name="description"
+    content="Discover the artisans, custodians and stories behind India's living heritage."
+  >
+  <title>Heritage Pin — Culture, on its own terms</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+  >
+  <link rel="stylesheet" href="./style.css">
+
+  <script
+    defer
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  ></script>
+  <script
+    defer
+    src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
+  ></script>
+
+  <!-- CHANGE THIS TO YOUR RENDER URL -->
+  <script>
+    window.HERITAGE_API_BASE = "https://heritagepinbot.onrender.com";
+  </script>
+
+  <script defer src="./app.js"></script>
+</head>
+
+<body>
+  <header>
+    <a class="brand" href="./" aria-label="Heritage Pin home">
+      <span class="brandmark" aria-hidden="true">
+        H<span>·</span>
+      </span>
+
+      <span>
+        heritage<span class="orange">pin</span>
+        <small>CULTURE, ON ITS OWN TERMS</small>
+      </span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <button type="button" class="nav active" id="explore">
+        Explore the map
+      </button>
+
+      <button type="button" class="nav" id="saved">
+        Saved <span id="savedCount">0</span>
+      </button>
+
+      <button type="button" class="nav" id="myProfile" hidden>
+        My profile
+      </button>
+    </nav>
+
+    <div class="header-actions">
+      <button
+        type="button"
+        id="theme"
+        aria-label="Switch colour theme"
+        aria-pressed="false"
+        title="Toggle dark theme"
+      >
+        ◐
+      </button>
+
+      <button type="button" id="add" class="primary">
+        + Put your craft on the map
+      </button>
+    </div>
+  </header>
+
+  <div class="modebar">
+    <span>
+      <strong id="modeLabel">Public directory</strong>
+      <span id="modeDescription">
+        Verified Heritage Pins · updated automatically
+      </span>
+    </span>
+
+    <button type="button" id="mode">
+      Try demo mode ↗
+    </button>
+  </div>
+
+  <main>
+    <aside class="discovery" aria-label="Discover crafts and custodians">
+      <div class="intro">
+        <p class="eyebrow">THE LIVING HERITAGE ATLAS</p>
+
+        <h1>
+          Find the people.<br>
+          <em>Follow the craft.</em>
+        </h1>
+
+        <p>
+          Discover the makers, communities and stories behind a place.
+        </p>
+      </div>
+
+      <label class="search">
+        <span aria-hidden="true">⌕</span>
+        <input
+          id="search"
+          type="search"
+          placeholder="Search craft, custodian or place"
+          aria-label="Search directory"
+          autocomplete="off"
+        >
+      </label>
+
+      <div class="filterrow">
+        <label for="craft">
+          Craft
+          <select id="craft">
+            <option value="">All crafts</option>
+          </select>
+        </label>
+
+        <label for="type">
+          Listing
+          <select id="type">
+            <option value="">All listings</option>
+            <option value="Artisan">Artisans</option>
+            <option value="Custodian">Custodians</option>
+            <option value="approved">Verified submissions</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="results-heading">
+        <strong id="count">Loading directory…</strong>
+        <button type="button" id="reset">Reset</button>
+      </div>
+
+      <div id="results" aria-live="polite">
+        <p class="empty">Loading heritage profiles…</p>
+      </div>
+
+      <footer>
+        People first. Stories in their own words.<br>
+
+        <button type="button" id="about">
+          About this directory
+        </button>
+
+        <span aria-hidden="true"> · </span>
+
+        <button type="button" id="review">
+          Claim / owner access
+        </button>
+      </footer>
+    </aside>
+
+    <section class="mapwrap" aria-label="Heritage map">
+      <div id="map" aria-label="Interactive map of heritage locations"></div>
+
+      <div class="mapheading">
+        <span class="eyebrow">EXPLORE INDIA</span>
+        <strong>A place for every story.</strong>
+        <span id="mapHint">Select a pin or a directory card</span>
+      </div>
+
+      <div class="map-actions">
+        <button type="button" id="locate">
+          ◎ Near me
+        </button>
+
+        <button type="button" id="fit">
+          ⤢ Show all
+        </button>
+      </div>
+
+      <div
+        id="mapError"
+        class="maperror"
+        role="status"
+        hidden
+      ></div>
+
+      <div class="legend" aria-label="Map legend">
+        <span>
+          <i aria-hidden="true"></i>
+          Public directory
+        </span>
+
+        <span>
+          <i class="approved" aria-hidden="true"></i>
+          Verified Heritage Pin
+        </span>
+
+        <span>
+          <i class="demo" aria-hidden="true"></i>
+          Demo
+        </span>
+      </div>
+
+      <div class="mapnote">
+        Heritage Pins show the shared craft location. Exact workshop
+        addresses may be kept private by the custodian.
+      </div>
+    </section>
+  </main>
+
+  <!-- Profile details -->
+  <dialog id="details" aria-label="Heritage profile details">
+    <button
+      type="button"
+      class="close"
+      data-close
+      aria-label="Close details"
+    >
+      ×
+    </button>
+
+    <div id="detailContent"></div>
+  </dialog>
+
+  <!-- Custodian submission form -->
+  <dialog id="onboard" aria-labelledby="onboardTitle">
+    <button
+      type="button"
+      class="close"
+      data-close
+      aria-label="Close form"
+    >
+      ×
+    </button>
+
+    <p class="eyebrow">YOUR PLACE. YOUR STORY.</p>
+    <h2 id="onboardTitle">Put your craft on the map.</h2>
+
+    <p id="formMode">
+      Telegram is the primary onboarding path. Website submissions are kept
+      as a demo fallback.
+    </p>
+
+    <form id="submitForm" enctype="multipart/form-data">
+      <div class="two">
+        <label>
+          Your public name
+          <input
+            name="name"
+            type="text"
+            required
+            maxlength="100"
+            autocomplete="name"
+            placeholder="Name or collective"
+          >
+        </label>
+
+        <label>
+          Craft
+          <input
+            name="craft"
+            type="text"
+            required
+            maxlength="100"
+            placeholder="For example, handloom weaving"
+          >
+        </label>
+      </div>
+
+      <div class="two">
+        <label>
+          Village / city
+          <input
+            name="place"
+            type="text"
+            maxlength="120"
+            placeholder="Village or city, state"
+          >
+        </label>
+
+        <label>
+          WhatsApp (optional)
+          <input
+            name="phone"
+            type="tel"
+            inputmode="numeric"
+            placeholder="919876543210"
+            pattern="[1-9][0-9]{7,14}"
+            title="Country code and digits only, without + or spaces"
+            autocomplete="tel"
+          >
+        </label>
+      </div>
+
+      <div class="two">
+        <label>
+          Latitude
+          <input
+            name="lat"
+            type="number"
+            min="-90"
+            max="90"
+            step="any"
+            placeholder="23.213"
+          >
+        </label>
+
+        <label>
+          Longitude
+          <input
+            name="lng"
+            type="number"
+            min="-180"
+            max="180"
+            step="any"
+            placeholder="69.726"
+          >
+        </label>
+      </div>
+
+      <button type="button" id="formLocation">
+        ◎ Use my current location
+      </button>
+
+      <p class="muted">
+        Share a public area you are comfortable publishing.
+      </p>
+
+      <label>
+        Your story
+        <textarea
+          name="story"
+          id="story"
+          maxlength="3000"
+          rows="4"
+          placeholder="What do you make? Who taught you? What would you like people to know?"
+        ></textarea>
+      </label>
+
+      <div class="speechbox">
+        <div>
+          <strong>Tell it in your voice</strong>
+          <small id="speechState" role="status">
+            Telegram voice onboarding is the primary path.
+          </small>
+        </div>
+
+        <div class="two">
+          <label for="language">
+            Spoken language
+            <select id="language">
+              <option value="hi-IN">Hindi</option>
+              <option value="en-US">English</option>
+            </select>
+          </label>
+
+          <label for="task">
+            Output
+            <select id="task">
+              <option value="transcribe">Original language</option>
+              <option value="translate">Translate to English</option>
+            </select>
+          </label>
+        </div>
+
+        <p class="muted">
+          The website form is a demo fallback. Telegram creates the live
+          verified Heritage Pin and credentials.
+        </p>
+      </div>
+
+      <label class="check">
+        <input name="consent" type="checkbox" required>
+        <span>
+          I consent to publishing the name, craft, story and approximate
+          location submitted here.
+        </span>
+      </label>
+
+      <button class="primary" type="submit">
+        Submit demo profile ↗
+      </button>
+
+      <p id="submitStatus" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="telegram">
+      <strong>Recommended: Telegram onboarding</strong>
+      <p>
+        Send your name, craft, location, craft video and voice story to the
+        Heritage Pin bot. After verification, you receive the Heritage ID
+        and password used to claim the profile.
+      </p>
+
+      <a
+        id="telegramLink"
+        hidden
+        target="_blank"
+        rel="noopener"
+      >
+        Open Telegram ↗
+      </a>
+
+      <span id="telegramUnavailable">
+        Configure BOT_USERNAME on Render to show the bot link.
+      </span>
+    </div>
+  </dialog>
+
+  <!-- Claim dialog -->
+  <dialog id="claimDialog" aria-labelledby="claimTitle">
+    <button
+      type="button"
+      class="close"
+      data-close
+      aria-label="Close claim dialog"
+    >
+      ×
+    </button>
+
+    <p class="eyebrow">CUSTODIAN ACCESS</p>
+    <h2 id="claimTitle">Claim your Heritage Pin.</h2>
+
+    <p>
+      Enter the Heritage ID and password sent to you by the Telegram bot
+      after verification.
+    </p>
+
+    <form id="claimForm">
+      <label>
+        Heritage ID
+        <input
+          id="claimId"
+          type="text"
+          placeholder="HP-ABC123"
+          autocomplete="username"
+          required
+        >
+      </label>
+
+      <label>
+        Password
+        <input
+          id="claimPassword"
+          type="password"
+          placeholder="Your Heritage Pin password"
+          autocomplete="current-password"
+          required
+        >
+      </label>
+
+      <button type="submit" class="primary">
+        Claim this profile
+      </button>
+
+      <p id="claimStatus" role="status" aria-live="polite"></p>
+    </form>
+  </dialog>
+
+  <!-- Artisan dashboard -->
+  <dialog id="profileDialog" aria-labelledby="profileTitle">
+    <button
+      type="button"
+      class="close"
+      data-close
+      aria-label="Close profile dashboard"
+    >
+      ×
+    </button>
+
+    <p class="eyebrow">HERITAGE PIN / CUSTODIAN DASHBOARD</p>
+    <h2 id="profileTitle">Manage your profile.</h2>
+
+    <div id="profileState" class="statusline"></div>
+
+    <form id="profileForm">
+      <label>
+        Heritage ID
+        <input id="profilePinId" type="text" readonly>
+      </label>
+
+      <div class="two">
+        <label>
+          Public name
+          <input id="profileName" type="text" maxlength="100" required>
+        </label>
+
+        <label>
+          Craft
+          <input id="profileCraft" type="text" maxlength="100" required>
+        </label>
+      </div>
+
+      <label>
+        Story
+        <textarea id="profileStory" maxlength="3000" rows="5"></textarea>
+      </label>
+
+      <label>
+        Bio
+        <textarea
+          id="profileBio"
+          maxlength="1200"
+          rows="4"
+          placeholder="Tell visitors about your practice, family or community."
+        ></textarea>
+      </label>
+
+      <div class="two">
+        <label>
+          Phone
+          <input id="profilePhone" type="tel" maxlength="20">
+        </label>
+
+        <label>
+          WhatsApp
+          <input id="profileWhatsapp" type="tel" maxlength="30">
+        </label>
+      </div>
+
+      <label>
+        Website / social link
+        <input id="profileWebsite" type="url" maxlength="300" placeholder="https://">
+      </label>
+
+      <label>
+        Profile photos
+        <input
+          id="profilePhotos"
+          type="file"
+          accept="image/*"
+          multiple
+        >
+      </label>
+
+      <p class="muted">
+        Add up to 3 compressed photos. For this hackathon demo, small images
+        are saved directly in Firebase Realtime Database; no Firebase Storage
+        is used.
+      </p>
+
+      <div id="photoPreview" class="photogrid"></div>
+
+      <div class="buttonrow">
+        <button type="submit" class="primary">
+          Save changes
+        </button>
+
+        <button type="button" id="profileLogout">
+          Sign out
+        </button>
+      </div>
+
+      <p id="profileStatus" role="status" aria-live="polite"></p>
+    </form>
+  </dialog>
+
+  <!-- Owner access button opens claim dialog -->
+  <dialog id="reviewDialog" aria-labelledby="reviewTitle">
+    <button
+      type="button"
+      class="close"
+      data-close
+      aria-label="Close owner access"
+    >
+      ×
+    </button>
+
+    <p class="eyebrow">HERITAGE PIN</p>
+    <h2 id="reviewTitle">Owner access.</h2>
+
+    <p>
+      Already received your Heritage ID and password? Claim your profile here.
+    </p>
+
+    <button type="button" id="loadReview" class="primary">
+      Claim a profile
+    </button>
+  </dialog>
+
+  <!-- About -->
+  <dialog id="aboutDialog" aria-labelledby="aboutTitle">
+    <button
+      type="button"
+      class="close"
+      data-close
+      aria-label="Close about"
+    >
+      ×
+    </button>
+
+    <p class="eyebrow">HERITAGE PIN / BAREMETAL</p>
+    <h2 id="aboutTitle">Discovery without the middleman.</h2>
+
+    <p>
+      Heritage Pin anchors a living heritage profile to the place where the
+      craft exists. Initial onboarding happens through Telegram, so the
+      custodian does not need to operate a complex storefront.
+    </p>
+
+    <p>
+      After the verification flow, the system creates a unique Heritage ID
+      and password. The public pin starts as <strong>NOT CLAIMED</strong>.
+      The custodian can later claim it and manage the profile directly.
+    </p>
+
+    <p>
+      This demo stores profile metadata in Firebase Realtime Database.
+      Firebase Storage is intentionally not used.
+    </p>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+
+  <noscript>
+    <p class="noscript">
+      Please enable JavaScript to use the heritage map and directory.
+    </p>
+  </noscript>
+</body>
+</html>
 
