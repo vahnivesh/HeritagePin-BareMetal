@@ -1,7 +1,8 @@
 ---
-## 🌐 Live Demo
+## 🌐 Live Demo & Links
 
 🔗 [heritagepin-baremetal.vercel.app](https://heritagepin-baremetal.vercel.app/)
+🔗 [Youtube Video](https://heritagepin-baremetal.vercel.app/)
 
 ---
 
