@@ -3,7 +3,7 @@
 
 🔗 [heritagepin-baremetal.vercel.app](https://heritagepin-baremetal.vercel.app/)
 
-## 🌐 Youtube video
+## ▶️ Youtube video
 
 🔗 [Watch Now](https://heritagepin-baremetal.vercel.app/)
 
