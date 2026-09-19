@@ -28,7 +28,7 @@
 <h3 align="center">HERITAGE PIN</h3>
 
 <p align="center">
-  <i>Culture, on its own terms.</i>
+  <i>#Culture, on its own terms.</i>
 </p>
 
 <br>
