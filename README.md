@@ -5,7 +5,7 @@
 
 ## ▶️ Youtube video
 
-🔗 [Watch Now](https://heritagepin-baremetal.vercel.app/)
+🔗 [Watch Now](https://www.youtube.com/watch?v=Er5ppvFu4Pw)
 
 ---
 
