@@ -36,8 +36,8 @@
 
 🔗 [heritagepin-baremetal.vercel.app](https://heritagepin-baremetal.vercel.app/)
 
-## alternative
-[alternative link](https://heritagepin-baremetal-mv0r6i8m5-bare-metal.vercel.app/)
+## alternative render link
+[https://heritage-pin.onrender.com](https://heritage-pin.onrender.com/)
 
 ## ▶️ Youtube video
 
