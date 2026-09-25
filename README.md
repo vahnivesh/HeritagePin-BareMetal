@@ -35,6 +35,7 @@
 ## 🌐 Live Demo
 
 🔗 [heritagepin-baremetal.vercel.app](https://heritagepin-baremetal.vercel.app/)
+[alternative link](https://heritagepin-baremetal-mv0r6i8m5-bare-metal.vercel.app/)
 
 ## ▶️ Youtube video
 
