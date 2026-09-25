@@ -1,13 +1,4 @@
----
-## 🌐 Live Demo
 
-🔗 [heritagepin-baremetal.vercel.app](https://heritagepin-baremetal.vercel.app/)
-
-## ▶️ Youtube video
-
-🔗 [Watch Now](https://www.youtube.com/watch?v=Er5ppvFu4Pw)
-
----
 
 <p align="center">
   <img src="baremetal-logo.png"
@@ -39,6 +30,24 @@
 </p>
 
 <br>
+
+---
+## 🌐 Live Demo
+
+🔗 [heritagepin-baremetal.vercel.app](https://heritagepin-baremetal.vercel.app/)
+
+## ▶️ Youtube video
+
+🔗 [Watch Now](https://www.youtube.com/watch?v=Er5ppvFu4Pw)
+
+---
+
+---
+## Telegram bot
+
+[visit our telegram bot](https://t.me/HeritagePinDemoBot)
+
+---
 
 <p align="center">
   <img src="website.gif"
